@@ -5,8 +5,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -15,7 +14,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -25,46 +24,58 @@ kotlin {
             isStatic = true
         }
     }
-    
-    sourceSets {
-        androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.activity.compose)
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.kotlinx.coroutines.android)
-            implementation("io.insert-koin:koin-android:3.5.6")
 
-            implementation("io.insert-koin:koin-compose:1.1.5")
-        }
+    sourceSets {
         commonMain.dependencies {
+            // Compose
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
+
+            // Lifecycle
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.androidx.sqlite.bundled)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.core)
-            implementation(libs.kotlinx.coroutines.core)
-            implementation("io.insert-koin:koin-core:3.5.6")
+
+            // Networking
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
-            implementation(libs.kotlinx.coroutines.core)
             implementation(libs.ktor.client.logging)
 
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
+            // Coroutines
+            implementation(libs.kotlinx.coroutines.core)
+
+            // DI
             implementation("io.insert-koin:koin-core:3.5.6")
 
+            // Images
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
+        }
+
+        androidMain.dependencies {
+            // Compose preview (ANDROID ONLY)
+            implementation(libs.compose.uiToolingPreview)
+            implementation(libs.androidx.activity.compose)
+
+            // Android networking
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.kotlinx.coroutines.android)
+
+
+            // Koin Android
+            implementation("io.insert-koin:koin-android:3.5.6")
+            implementation("io.insert-koin:koin-compose:1.1.5")
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
     }
 }
@@ -80,16 +91,19 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+        }
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -97,12 +111,8 @@ android {
 }
 
 dependencies {
+    // Android-only tooling
     debugImplementation(libs.compose.uiTooling)
-    add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosArm64", libs.androidx.room.compiler)
-}
-room {
-    schemaDirectory("$projectDir/schemas")
+
 }
 

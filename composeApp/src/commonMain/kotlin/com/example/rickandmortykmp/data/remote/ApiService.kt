@@ -8,7 +8,7 @@ class ApiService {
     private val client = ApiClient.httpClient
     private val baseUrl = "https://rickandmortyapi.com/api/character"
 
-    suspend fun getUsers(): UserResponse {
+    suspend fun getCharacters(): UserResponse {
         return client.get(baseUrl).body()
     }
 

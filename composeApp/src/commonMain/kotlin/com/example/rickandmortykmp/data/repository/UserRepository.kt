@@ -3,15 +3,15 @@ package com.example.rickandmortykmp.data.repository
 import com.example.rickandmortykmp.data.model.ResponseState
 import com.example.rickandmortykmp.data.model.UserResponse
 import com.example.rickandmortykmp.data.remote.ApiService
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class UserRepository(
-    private val apiService: ApiService
-) : BaseRepository() {
+class UserRepository : BaseRepository(), KoinComponent {
 
-    suspend fun getUsers(): ResponseState<UserResponse> {
-        return safeApiCall {
-            apiService.getUsers()
+    private val apiService: ApiService by inject()
+
+    suspend fun getUsers(): ResponseState<UserResponse> =
+        safeApiCall {
+            apiService.getCharacters()
         }
-    }
-
 }

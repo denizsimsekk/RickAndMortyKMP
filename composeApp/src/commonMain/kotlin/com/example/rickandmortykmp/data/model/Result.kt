@@ -1,5 +1,8 @@
 package com.example.rickandmortykmp.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Result(
     val created: String,
     val episode: List<String>,
