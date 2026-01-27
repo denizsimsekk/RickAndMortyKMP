@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -35,7 +34,6 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation("io.insert-koin:koin-android:3.5.6")
 
-            // Compose helpers (VERSİYONLAR BÖYLE OLMALI)
             implementation("io.insert-koin:koin-compose:1.1.5")
         }
         commonMain.dependencies {
@@ -53,6 +51,12 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.kotlinx.coroutines.core)
             implementation("io.insert-koin:koin-core:3.5.6")
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.ktor.client.logging)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
