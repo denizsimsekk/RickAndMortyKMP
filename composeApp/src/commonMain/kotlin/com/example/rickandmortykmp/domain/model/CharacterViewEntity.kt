@@ -1,6 +1,6 @@
 package com.example.rickandmortykmp.domain.model
 
-data class Character(
+data class CharacterViewEntity(
     val id: Int,
     val name: String,
     val image: String,
@@ -8,6 +8,6 @@ data class Character(
     val species: String,
     val gender: String,
     val originName: String,
-    val locationName: String
+    val locationName: String,
+    val isFavorite: Boolean? = null
 )
-

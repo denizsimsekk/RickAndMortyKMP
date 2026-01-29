@@ -1,0 +1,23 @@
+CREATE TABLE FavoriteCharacter (
+    id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    image TEXT NOT NULL,
+    status TEXT NOT NULL,
+    species TEXT NOT NULL,
+    gender TEXT NOT NULL,
+    originName TEXT NOT NULL,
+    locationName TEXT NOT NULL
+);
+
+insertCharacter:
+INSERT OR REPLACE INTO FavoriteCharacter(id, name, image, status, species, gender, originName, locationName)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8);
+
+deleteCharacter:
+DELETE FROM FavoriteCharacter WHERE id = ?1;
+
+selectAllFavorites:
+SELECT * FROM FavoriteCharacter ORDER BY name ASC;
+
+isFavorite:
+SELECT COUNT(*) > 0 FROM FavoriteCharacter WHERE id = ?1;

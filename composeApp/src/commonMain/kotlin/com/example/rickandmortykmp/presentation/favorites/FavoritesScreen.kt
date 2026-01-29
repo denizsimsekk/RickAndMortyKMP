@@ -1,12 +1,12 @@
-package com.example.rickandmortykmp.presentation.characters
+package com.example.rickandmortykmp.presentation.favorites
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,16 +39,15 @@ import com.example.rickandmortykmp.domain.model.CharacterViewEntity
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun CharactersScreen(
-    viewModel: CharactersViewModel,
+fun FavoritesScreen(
+    viewModel: FavoritesViewModel,
     onCharacterClick: (CharacterViewEntity) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.refresh()
+        viewModel.load()
     }
 
     Column(
@@ -56,7 +55,6 @@ fun CharactersScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
     ) {
-        // Header
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -65,7 +63,7 @@ fun CharactersScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                "Rick & Morty",
+                text = "Favorites",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -78,8 +76,7 @@ fun CharactersScreen(
             }
         }
 
-        PullToRefreshBox(isRefreshing = uiState.isLoading, onRefresh = { viewModel.refresh() }) {
-
+        PullToRefreshBox(isRefreshing = uiState.isLoading, onRefresh = { viewModel.load() }) {
             when {
                 uiState.isLoading && uiState.characters.isEmpty() -> {
                     Box(
@@ -104,15 +101,27 @@ fun CharactersScreen(
                                 color = MaterialTheme.colorScheme.error,
                                 style = MaterialTheme.typography.bodyMedium
                             )
-                            Button(onClick = { viewModel.refresh() }) {
+                            Button(onClick = { viewModel.load() }) {
                                 Text("Retry")
                             }
                         }
                     }
                 }
 
-                else -> {
+                uiState.characters.isEmpty() -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No favorites yet",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
 
+                else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -122,7 +131,7 @@ fun CharactersScreen(
                             items = uiState.characters,
                             key = { it.id }
                         ) { character ->
-                            CharacterCard(
+                            FavoriteCharacterCard(
                                 character = character,
                                 onClick = { onCharacterClick(character) }
                             )
@@ -135,7 +144,7 @@ fun CharactersScreen(
 }
 
 @Composable
-private fun CharacterCard(
+private fun FavoriteCharacterCard(
     character: CharacterViewEntity,
     onClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -149,40 +158,44 @@ private fun CharacterCard(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            AsyncImage(
-                model = character.image,
-                contentDescription = "Avatar of ${character.name}",
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface),
-                contentScale = ContentScale.Crop
-            )
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(
-                    text = character.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                AsyncImage(
+                    model = character.image,
+                    contentDescription = "Avatar of ${character.name}",
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface),
+                    contentScale = ContentScale.Crop
                 )
-                Text(
-                    text = "${character.status} · ${character.species}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
-                )
-                if (character.originName.isNotBlank()) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     Text(
-                        text = character.originName,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        text = character.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    Text(
+                        text = "${character.status} · ${character.species}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                    )
+                    if (character.originName.isNotBlank()) {
+                        Text(
+                            text = character.originName,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        )
+                    }
                 }
             }
         }

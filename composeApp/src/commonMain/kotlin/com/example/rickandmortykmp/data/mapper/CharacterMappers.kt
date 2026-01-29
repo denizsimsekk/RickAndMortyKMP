@@ -1,10 +1,10 @@
 package com.example.rickandmortykmp.data.mapper
 
 import com.example.rickandmortykmp.data.model.Result
-import com.example.rickandmortykmp.domain.model.Character
+import com.example.rickandmortykmp.domain.model.CharacterViewEntity
 
-fun Result.toDomain(): Character =
-    Character(
+fun Result.toDomain(): CharacterViewEntity =
+    CharacterViewEntity(
         id = id,
         name = name,
         image = image,

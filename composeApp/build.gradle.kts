@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -38,6 +39,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
 
+            // Navigation 3
+            implementation(libs.jetbrains.navigation3.ui)
+
             // Networking
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
@@ -53,6 +57,9 @@ kotlin {
             // Images
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
+
+            // SQLDelight
+            implementation(libs.sqldelight.runtime)
         }
 
         androidMain.dependencies {
@@ -68,10 +75,14 @@ kotlin {
             // Koin Android
             implementation("io.insert-koin:koin-android:3.5.6")
             implementation("io.insert-koin:koin-compose:1.1.5")
+
+            // SQLDelight Android driver
+            implementation(libs.sqldelight.android.driver)
         }
 
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.sqldelight.native.driver)
         }
 
         commonTest.dependencies {
@@ -107,6 +118,14 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+sqldelight {
+    databases {
+        create("AppDatabase") {
+            packageName.set("com.example.rickandmortykmp.db")
+        }
     }
 }
 
